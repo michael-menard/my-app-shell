@@ -1,23 +1,20 @@
 {
-  "name": "my-app-shell",
+  "name": "my-turborepo-app",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
+    "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "prettier": "^3.2.5",
-    "turbo": "^2.2.3",
-    "typescript": "5.5.4"
+    "prettier": "^3.1.0",
+    "turbo": "latest"
   },
-  "engines": {
-    "node": ">=18"
-  },
-  "packageManager": "npm@10.9.0",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "packageManager": "npm@10.2.4"
 }
