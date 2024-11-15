@@ -1,20 +1,29 @@
 {
-  "name": "my-turborepo-app",
+  "name": "my-app-shell",
   "private": true,
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
-    "clean": "turbo clean",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "dev": "npx turbo run dev",
+    "build": "npx turbo run build",
+    "preview:teams": "npx turbo run preview --filter=my-teams",
+    "preview:associations": "npx turbo run preview --filter=my-associations",
+    "dev:shell": "npx turbo run dev --filter=my-app-shell",
+    "start:remotes": "concurrently \"npx turbo run preview --filter=my-teams\" \"npx turbo run preview --filter=my-associations\"",
+    "start": "concurrently \"npm run start:remotes\" \"npx turbo run dev --filter=my-app-shell\"",
+    "clean": "rm -rf */*/node_modules",
+    "clean:build": "rm -rf */*/dist",
+    "debug:start": "npm run clean:build && npm run build && npm run start:remotes"
   },
   "devDependencies": {
+    "concurrently": "^8.0.0",
     "prettier": "^3.1.0",
     "turbo": "latest"
   },
-  "packageManager": "npm@10.2.4"
+  "packageManager": "npm@10.2.4",
+  "dependencies": {
+    "react-router-dom": "^6.28.0"
+  }
 }
