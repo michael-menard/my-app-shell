@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
 // Type declarations for the remote modules
 declare module 'my-teams/App';
@@ -17,62 +18,24 @@ const MyAssociationsApp = lazy(() => import('my-associations/App').catch(err => 
 
 function App() {
   return (
-    <div style={{ padding: '20px' }}>
-      <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>Container App</h1>
-      
-      <div style={{ marginBottom: '20px' }}>
-        <Suspense fallback={<div style={{ padding: '10px', border: '1px solid #ccc' }}>Loading Teams...</div>}>
-          <ErrorBoundary>
-            <TeamsApp />
-          </ErrorBoundary>
-        </Suspense>
-      </div>
-      
-      <div style={{ marginBottom: '20px' }}>
-        <Suspense fallback={<div style={{ padding: '10px', border: '1px solid #ccc' }}>Loading Associations...</div>}>
-          <ErrorBoundary>
-            <MyAssociationsApp />
-          </ErrorBoundary>
-        </Suspense>
-      </div>
-    </div>
-  );
-}
+      <BrowserRouter>
+        <div>
+          <nav>
+            <Link to="/">Home</Link>
+            <Link to="/teams">Teams</Link>
+            <Link to="/associations">Associations</Link>
+          </nav>
 
-// Error Boundary Component
-class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  { hasError: boolean }
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: any) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error in component:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div style={{ 
-          padding: '10px', 
-          border: '1px solid #ff0000',
-          borderRadius: '4px',
-          color: '#ff0000'
-        }}>
-          Something went wrong loading this component.
+          <Suspense fallback={<div>Loading...</div>}>
+            <Routes>
+              <Route path="/" element={<div>Home</div>} />
+              <Route path="/teams/*" element={<TeamsApp />} />
+              <Route path="/associations/*" element={<MyAssociationsApp />} />
+            </Routes>
+          </Suspense>
         </div>
-      );
-    }
-
-    return this.props.children;
-  }
+      </BrowserRouter>
+  );
 }
 
 export default App;

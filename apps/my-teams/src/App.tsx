@@ -1,12 +1,14 @@
+import { Routes, Route, useNavigate } from 'react-router-dom';
 
 import './App.css'
 
 function App() {
 
   return (
-    <div className='teams-page'>
-      <h1>My Teams</h1>
-    </div>
+      <Routes>
+          <Route path="/" element={<div>Teams List</div>} />
+          <Route path="/:teamId" element={<div>Team Details</div>} />
+      </Routes>
   )
 }
 
