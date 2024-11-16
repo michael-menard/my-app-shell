@@ -1,34 +1,78 @@
-import React, { Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import React, { lazy, Suspense } from 'react';
 
-// Import remote modules using dynamic imports
-const TeamsApp = React.lazy(() => import('my-teams/App'));
-const AssociationsApp = React.lazy(() => import('my-associations/App'));
+// Type declarations for the remote modules
+declare module 'my-teams/App';
+declare module 'my-associations/App';
 
-const Loading = () => <div>Loading...</div>;
+// Lazy load the remote components
+const TeamsApp = lazy(() => import('my-teams/App').catch(err => {
+  console.error('Error loading TeamsApp:', err);
+  return { default: () => <div>Error loading Teams App</div> };
+}));
 
-const AppShell = () => {
+const MyAssociationsApp = lazy(() => import('my-associations/App').catch(err => {
+  console.error('Error loading MyAssociationsApp:', err);
+  return { default: () => <div>Error loading Associations App</div> };
+}));
+
+function App() {
   return (
-    <BrowserRouter>
-      <div>
-        <nav>
-          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/teams">Teams</Link></li>
-            <li><Link to="/associations">Associations</Link></li>
-          </ul>
-        </nav>
-
-        <Suspense fallback={<Loading />}>
-          <Routes>
-            <Route path="/" element={<div>Welcome to the App Shell</div>} />
-            <Route path="/teams/*" element={<TeamsApp />} />
-            <Route path="/associations/*" element={<AssociationsApp />} />
-          </Routes>
+    <div style={{ padding: '20px' }}>
+      <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>Container App</h1>
+      
+      <div style={{ marginBottom: '20px' }}>
+        <Suspense fallback={<div style={{ padding: '10px', border: '1px solid #ccc' }}>Loading Teams...</div>}>
+          <ErrorBoundary>
+            <TeamsApp />
+          </ErrorBoundary>
         </Suspense>
       </div>
-    </BrowserRouter>
+      
+      <div style={{ marginBottom: '20px' }}>
+        <Suspense fallback={<div style={{ padding: '10px', border: '1px solid #ccc' }}>Loading Associations...</div>}>
+          <ErrorBoundary>
+            <MyAssociationsApp />
+          </ErrorBoundary>
+        </Suspense>
+      </div>
+    </div>
   );
-};
+}
 
-export default AppShell;
+// Error Boundary Component
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Error in component:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ 
+          padding: '10px', 
+          border: '1px solid #ff0000',
+          borderRadius: '4px',
+          color: '#ff0000'
+        }}>
+          Something went wrong loading this component.
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+export default App;

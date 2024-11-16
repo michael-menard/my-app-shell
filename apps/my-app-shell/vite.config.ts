@@ -8,16 +8,43 @@ export default defineConfig({
     federation({
       name: 'my-app-shell',
       remotes: {
-        'my-teams': 'http://localhost:5001/assets/remoteEntry.js',
-        'my-associations': 'http://localhost:5002/assets/remoteEntry.js'
+        'my-teams': 'http://localhost:5001/remoteEntry.js',
+        'my-associations': 'http://localhost:5002/remoteEntry.js'
       },
-      shared: ['react', 'react-dom', 'react-router-dom']
+      shared: {
+        react: {
+          singleton: true,
+          requiredVersion: '^18.2.0'
+        },
+        'react-dom': {
+          singleton: true,
+          requiredVersion: '^18.2.0'
+        },
+        'react-router-dom': {
+          singleton: true,
+          requiredVersion: '^6.0.0'
+        }
+      }
     })
   ],
   build: {
-    modulePreload: false,
     target: 'esnext',
     minify: false,
-    cssCodeSplit: false
+    cssCodeSplit: false,
+    modulePreload: false,
+    rollupOptions: {
+      output: {
+        format: 'esm',
+        entryFileNames: '[name].js'
+      }
+    }
+  },
+  server: {
+    port: 5000,
+    strictPort: true,
+    cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    }
   }
 })
